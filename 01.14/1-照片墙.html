@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			ul{
+				margin:0;
+				padding:0;
+				list-style: none;
+				width: 660px;
+				margin:50px auto;
+			}
+			li{
+				width: 150px;
+				height: 150px;
+				border:2px solid #fff;
+				float: left;
+				background-size: 100%;
+				margin-right:10px;
+				margin-bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="button" value="随机排序" id="btn"/>
+		<ul>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+		<script src="move4.js"></script>
+		<script>
+			/*
+				1.	给元素添加背景背景，效果图
+					浮动改为绝对定位
+				2.获取到每个元素的位置，用数组排列起来
+					把所有的元素存到数组中
+					随机排列，把元素改变位置，添加ul中
+			*/
+			/*
+				1.
+			*/
+
+			var ul=document.getElementsByTagName('ul')[0];
+			var lis=document.getElementsByTagName('li');
+			var btn=document.getElementById('btn');
+			var arr=[];//存初始化的位置
+			var pos = {};//记录按下的位置和坐标
+			var isDrag = false;//控制拖拽
+			
+			for(var i=0;i<lis.length;i++){
+
+				lis[i].style.backgroundImage='url(img/'+(i+1)+'.jpg)'
+				lis[i].style.left = lis[i].offsetLeft + 'px';
+				lis[i].style.top = lis[i].offsetTop + 'px';
+				//自定义属性l,t记录自己的位置
+			}
+			for(var i=0;i<lis.length;i++){
+				lis[i].style.position = 'absolute';
+				lis[i].style.margin = 0;
+			}
+			
+			
+			btn.onclick=function(){
+				arr.sort(function(a,b){
+				return Math.random()-0.5;
+				});	
+				
+				for(var i=0;i<arr.length;i++){
+					move(lis[i],arr[i],500,'linear');
+				}
+			}
+			ul.onmousedown=function(ev){ 
+				if(ev.target.parentNode.parentNode==ul){
+					var li=ev.target.parentNode;
+					li.style.zIndex=5;
+					pos.disX = ev.clientX-li.getBoundingClientRect().left;
+					pos.disY = ev.clientY-li.getBoundingClientRect().top;
+					ev.preventDefault();
+					pos.e =li;
+					isDrag = true;
+
+				}
+			}
+				
+			ul.onmousemove = function(ev){
+				if(isDrag){
+					var l = ev.clientX - pos.disX;
+					var t = ev.clientY - pos.disY;	
+					pos.e.style.left = l + 'px'; 
+					pos.e.style.top = t + 'px';
+				   for(var i=0;i<lis.length;i++){
+						if(pos.e!==lis[i]&&duang(pos.e,lis[i])){
+							lis[i].style.border='1px solid red';
+						}else{
+							lis[i].style.border='';
+						}
+					}
+				}
+			}
+			ul.onmouseup = function(ev){
+				
+				isDrag = false;
+
+			}
+			function duang(obj1,obj2){
+				var pos1 = obj1.getBoundingClientRect();
+				var pos2 = obj2.getBoundingClientRect();
+				if(pos1.right<pos2.left || pos1.bottom<pos2.top || pos1.left>pos2.right || pos1.top>pos2.bottom){
+					//没碰上
+					return false;
+				}else{
+					//碰上
+					return true;
+				}
+			}
+			
+		</script>
+	</body>
+</html>
